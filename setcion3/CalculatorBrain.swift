@@ -10,11 +10,10 @@ import Foundation
 class CalculatorBrain {
     
     private var accumulator = 0.0
-    private var internalProgram = [Any]()
+    private var saveValue = 0.0
     
     func setOperand(operand : Double) {
         accumulator = operand
-        internalProgram.append(operand)
     }
     
     private var operations = [
@@ -38,7 +37,6 @@ class CalculatorBrain {
     
     
     func performOperation(symbol : String) {
-        internalProgram.append(symbol)
         if let operation = operations[symbol] {
             switch operation {
             case .Constant(let value) :
@@ -61,29 +59,21 @@ class CalculatorBrain {
         }
     }
     
-    typealias PropertyList = AnyObject
-    var program : PropertyList {
+    
+    var program : Double {
         get {
-            return internalProgram as AnyObject
+            accumulator = saveValue
+            return saveValue
         }
         set {
+            saveValue = accumulator
             clear()
-            if let arrayofOps = newValue as? [AnyObject] {
-                for op in arrayofOps {
-                    if let operand = op as? Double {
-                        setOperand(operand : operand)
-                    }else if let operation = op as? String {
-                        performOperation(symbol: operation)
-                    }
-                }
-            }
         }
     }
     
     func clear(){
         accumulator = 0.0
         pending = nil
-        internalProgram.removeAll()
     }
     
     
